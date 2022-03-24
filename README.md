@@ -1,2 +1,3 @@
-# electron-delta
-True delta updates for electronjs
+# Electron Delta
+
+True delta updates for electronjs.
