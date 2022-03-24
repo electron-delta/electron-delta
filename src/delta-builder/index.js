@@ -110,7 +110,7 @@ class DeltaBuilder {
     this.defines.DELTA_FILE_PATH = deltaFilePath;
     this.defines.DELTA_FILE_NAME = deltaFileName;
     this.defines.NEW_APP_SIZE = newAppSize || 67540;
-    this.defines.NEW_APP_VERSION = newAppVersion;
+    // this.defines.NEW_APP_VERSION = newAppVersion;
     let created = false;
     try {
       created = await this.executeNSIS();

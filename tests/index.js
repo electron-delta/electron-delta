@@ -1,21 +1,42 @@
-const path = require('path');
+const path = require("path");
 
-const DeltaBuilder = require('../src/delta-builder');
+const DeltaBuilder = require("../src/delta-builder");
 
-const deltaFilePath = path.join(__dirname, 'diff.delta');
-const installerOutputPath = path.join(__dirname, 'blitz-delta-updater.exe');
+const { extract7zip } = require("../src/utils");
+
+const installerOutputPath = path.join(__dirname, "delta-updater.exe");
+
+const PRODUCT_NAME = "electron-quick-start";
+
+const createDelta = require("../src/delta-builder/create-delta");
+
+const latestEXEPath = path.resolve(
+  "D:\\Work\\electron-delta\\electron-quick-start\\dist\\electron-quick-start-0.0.2.exe"
+);
+
+const oldEXEPath = path.resolve(
+  "D:\\Work\\electron-delta\\electron-quick-start\\dist\\electron-quick-start-0.0.1.exe"
+);
 
 (async () => {
+  const oldDir = path.join(__dirname, "old");
+  const latestDir = path.join(__dirname, "latest");
+  const deltaFilePath = path.join(__dirname, `${PRODUCT_NAME}.delta`);
+
+  await extract7zip(latestEXEPath, latestDir);
+  await extract7zip(oldEXEPath, oldDir);
+
+  await createDelta(oldDir, latestDir, deltaFilePath);
+
   const deltaBuilder = new DeltaBuilder({
-    APP_GUID: '153f8ce0-b97a-575b-ba12-4ff8b1481894',
+    PRODUCT_NAME,
   });
 
   try {
     await deltaBuilder.build({
       installerOutputPath,
       deltaFilePath,
-      newAppSize: 70000,
-      newAppVersion: '1.15.11',
+      deltaFileName: `${PRODUCT_NAME}.delta`,
     });
   } catch (e) {
     console.log(e);
