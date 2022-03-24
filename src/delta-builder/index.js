@@ -20,6 +20,7 @@ class DeltaBuilder {
 
     this.defines = {
       APP_GUID: this.options.APP_GUID,
+      PRODUCT_NAME: this.options.PRODUCT_NAME,
     };
   }
 
