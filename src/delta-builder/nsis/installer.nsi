@@ -1,7 +1,7 @@
 !include FileFunc.nsh
 !include LogicLib.nsh
 
-Name "${PRODUCT_NAME}DeltaUpdater"
+Name "${PRODUCT_NAME}-Delta-Updater"
 OutFile "${INSTALLER_OUTPUT_PATH}"
 RequestExecutionLevel user
 ShowInstDetails nevershow
@@ -11,7 +11,7 @@ Icon "${PRODUCT_ICON_PATH}"
 
 SilentInstall silent
 
-InstallDir "$LocalAppData\Programs\electron-delta-updater"
+InstallDir "$LocalAppData\Programs\${PRODUCT_NAME}-delta-updater"
 
 # avoid exit code 2
 !macro quitSuccess

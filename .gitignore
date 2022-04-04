@@ -104,3 +104,6 @@ dist
 .tern-port
 
 data
+tests/**
+
+!tests/**.js

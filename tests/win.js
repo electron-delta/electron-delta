@@ -11,11 +11,11 @@ const PRODUCT_NAME = "electron-quick-start";
 const createDelta = require("../src/delta-builder/create-delta");
 
 const latestEXEPath = path.resolve(
-  "D:\\Work\\electron-delta\\electron-quick-start\\dist\\electron-quick-start-0.0.2.exe"
+  "D:\\Work\\electron-delta\\electron-quick-start\\dist\\electron-quick-start-0.0.3.exe"
 );
 
 const oldEXEPath = path.resolve(
-  "D:\\Work\\electron-delta\\electron-quick-start\\dist\\electron-quick-start-0.0.1.exe"
+  "D:\\Work\\electron-delta\\electron-quick-start\\dist\\electron-quick-start-0.0.2.exe"
 );
 
 (async () => {
@@ -37,6 +37,9 @@ const oldEXEPath = path.resolve(
       installerOutputPath,
       deltaFilePath,
       deltaFileName: `${PRODUCT_NAME}.delta`,
+      productIconPath: path.resolve(
+        "D:\\Work\\electron-delta\\electron-quick-start\\icon.ico"
+      ),
     });
   } catch (e) {
     console.log(e);
