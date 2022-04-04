@@ -7,9 +7,9 @@ RequestExecutionLevel user
 ShowInstDetails nevershow
 Unicode true
 
-; Icon ".\icon.ico"
+Icon "${PRODUCT_ICON_PATH}"
 
-SilentInstall normal
+SilentInstall silent
 
 InstallDir "$LocalAppData\Programs\electron-delta-updater"
 
