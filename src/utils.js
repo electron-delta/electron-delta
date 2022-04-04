@@ -56,11 +56,6 @@ const extract7zip = (zipPath, extractedDir) =>
     });
   });
 
-const getDownloadURL = (channel, fileName) =>
-  channel === "stable"
-    ? `https://blitz-stable.blitz.gg/${fileName}`
-    : `https://blitz-canary.blitz.gg/${fileName}`;
-
 const removeExt = (str) => str.replace(".exe", "");
 
 const delay = (ms) =>
@@ -83,7 +78,6 @@ module.exports = {
   safeSpawn,
   downloadFileIfNotExists,
   extract7zip,
-  getDownloadURL,
   removeExt,
   delay,
   computeSHA256,
