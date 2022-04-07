@@ -23,7 +23,7 @@ Section "gen_package" SEC01
 
     SetDetailsPrint none
 
-	  nsProcess::_KillProcess "${PRODUCT_NAME}.exe" $R0
+	  nsProcess::_KillProcess "${PROCESS_NAME}.exe" $R0
     Pop $R0
     nsProcess::_Unload
 
@@ -48,7 +48,7 @@ Section "gen_package" SEC01
     ${IfNot} ${Errors}
       DetailPrint "-norestart switch found"
     ${Else}
-      ShellExecAsUser::ShellExecAsUser "" "$LocalAppData\Programs\${PRODUCT_NAME}\${PRODUCT_NAME}.exe" "--updated"
+      ShellExecAsUser::ShellExecAsUser "" "$LocalAppData\Programs\${PRODUCT_NAME}\${PROCESS_NAME}.exe" "--updated"
     ${EndIf}
 
     !insertmacro quitSuccess

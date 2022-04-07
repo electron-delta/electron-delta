@@ -4,9 +4,10 @@ const DeltaBuilder = require("../src/delta-builder");
 
 const { extract7zip } = require("../src/utils");
 
-const installerOutputPath = path.join(__dirname, "delta-updater.exe");
+const installerOutputPath = path.join(__dirname, "linear-updater.exe");
 
 const PRODUCT_NAME = "electron-quick-start";
+const PROCESS_NAME = "electron-quick-start";
 
 const createDelta = require("../src/delta-builder/create-delta");
 
@@ -30,6 +31,7 @@ const oldEXEPath = path.resolve(
 
   const deltaBuilder = new DeltaBuilder({
     PRODUCT_NAME,
+    PROCESS_NAME,
   });
 
   try {
@@ -37,9 +39,7 @@ const oldEXEPath = path.resolve(
       installerOutputPath,
       deltaFilePath,
       deltaFileName: `${PRODUCT_NAME}.delta`,
-      productIconPath: path.resolve(
-        "D:\\Work\\electron-delta\\electron-quick-start\\icon.ico"
-      ),
+      productIconPath: path.resolve(__dirname, "appIcon.ico"),
     });
   } catch (e) {
     console.log(e);

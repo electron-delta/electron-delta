@@ -21,6 +21,7 @@ class DeltaBuilder {
     this.defines = {
       APP_GUID: this.options.APP_GUID,
       PRODUCT_NAME: this.options.PRODUCT_NAME,
+      PROCESS_NAME: this.options.PROCESS_NAME || this.options.PRODUCT_NAME,
     };
   }
 
@@ -86,9 +87,9 @@ class DeltaBuilder {
     try {
       this.logger.log("Compiling with makensis ", this.installerNSIPath);
       await safeSpawn(makeNSISPath, args, {
-        stdio: "ignore",
         cwd: path.dirname(this.installerNSIPath),
         env: { ...process.env, NSISDIR: nsisRootPath },
+        stdio: "inherit",
       });
       return true;
     } catch (err) {
