@@ -102,8 +102,8 @@ class DeltaBuilder {
     installerOutputPath,
     deltaFilePath,
     deltaFileName,
-    newAppSize,
-    newAppVersion,
+    // newAppSize,
+    // newAppVersion,
     productIconPath,
   }) {
     this.installerNSIPath = DeltaBuilder.getNSISScript();
@@ -111,8 +111,8 @@ class DeltaBuilder {
     this.defines.INSTALLER_OUTPUT_PATH = installerOutputPath;
     this.defines.DELTA_FILE_PATH = deltaFilePath;
     this.defines.DELTA_FILE_NAME = deltaFileName;
-    this.defines.NEW_APP_SIZE = newAppSize || 67540;
-    this.defines.NEW_APP_VERSION = newAppVersion;
+    // this.defines.NEW_APP_SIZE = newAppSize || 67540;
+    // this.defines.NEW_APP_VERSION = newAppVersion;
     this.defines.PRODUCT_ICON_PATH = productIconPath;
     let created = false;
     try {
