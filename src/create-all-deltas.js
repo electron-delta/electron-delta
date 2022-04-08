@@ -137,7 +137,9 @@ const createAllDeltas = async ({
     fs.writeFileSync(path.join(`${installerPath}.sha256`), sha256);
   }
 
-  return fs.readdirSync(outputDir);
+  return fs
+    .readdirSync(outputDir)
+    .map((fileName) => path.join(outputDir, fileName));
 };
 
 module.exports = createAllDeltas;
