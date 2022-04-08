@@ -46,7 +46,7 @@ const createAllDeltas = async ({
     .filter((d) => d.endsWith(".exe"))
     .filter((d) => d.includes(productName))[0];
 
-  const latestReleaseFileName = removeExt(latestReleaseFile);
+  const latestReleaseFileName = removeExt(fileNameFromUrl(latestReleaseFile));
   const latestVersion = process.env.npm_package_version;
 
   logger.log("Current release info ", {
@@ -57,6 +57,11 @@ const createAllDeltas = async ({
 
   // const APP_GUID = "153f8ce0-b97a-575b-ba12-4ff8b1481894";
   // const deltaBuilder = new DeltaBuilder({ APP_GUID });
+
+  const deltaInstallerBuilder = new DeltaInstallerBuilder({
+    PRODUCT_NAME: productName,
+    PROCESS_NAME: processName,
+  });
 
   // download all the installers
   for (const downloadURL of allReleases) {
@@ -80,6 +85,8 @@ const createAllDeltas = async ({
 
   const latestReleaseDir = path.join(dataDir, latestReleaseFileName);
   const outputDir = path.join(deltaDir, latestReleaseFileName);
+
+  await fs.ensureDir(latestReleaseDir);
   await fs.ensureDir(outputDir);
   await fs.emptyDir(outputDir);
 
@@ -110,7 +117,7 @@ const createAllDeltas = async ({
       const installerFileName = `${oldAppName}-to-${latestReleaseFileName}.exe`;
       const installerOutputPath = path.join(outputDir, installerFileName);
       console.log(`Creating delta installer for ${oldAppName}`);
-      await deltaBuilder.build({
+      await deltaInstallerBuilder.build({
         installerOutputPath,
         deltaFilePath,
         deltaFileName,
