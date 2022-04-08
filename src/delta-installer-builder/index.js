@@ -11,7 +11,7 @@ const defaultOptions = {
   nsisURL: "https://github.com/electron-delta/nsis.zip/raw/main/nsis.zip",
 };
 
-class DeltaBuilder {
+class DeltaInstallerBuilder {
   constructor(options) {
     this.options = {
       ...defaultOptions,
@@ -106,7 +106,7 @@ class DeltaBuilder {
     // newAppVersion,
     productIconPath,
   }) {
-    this.installerNSIPath = DeltaBuilder.getNSISScript();
+    this.installerNSIPath = DeltaInstallerBuilder.getNSISScript();
 
     this.defines.INSTALLER_OUTPUT_PATH = installerOutputPath;
     this.defines.DELTA_FILE_PATH = deltaFilePath;
@@ -129,4 +129,4 @@ class DeltaBuilder {
   }
 }
 
-module.exports = DeltaBuilder;
+module.exports = DeltaInstallerBuilder;

@@ -1,5 +1,5 @@
 {
-  "name": "electron-delta",
+  "name": "@electron-delta/builder",
   "version": "1.0.0",
   "description": "True delta updates for electronjs.",
   "main": "src/index.js",

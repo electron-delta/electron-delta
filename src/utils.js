@@ -73,6 +73,14 @@ const computeSHA256 = (filePath) => {
   return hex;
 };
 
+function fileNameFromUrl(url) {
+  var matches = url.match(/\/([^\/?#]+)[^\/]*$/);
+  if (matches.length > 1) {
+    return matches[1];
+  }
+  return null;
+}
+
 module.exports = {
   downloadFile,
   safeSpawn,
@@ -81,4 +89,5 @@ module.exports = {
   removeExt,
   delay,
   computeSHA256,
+  fileNameFromUrl,
 };
