@@ -2,6 +2,8 @@ const createAllDeltas = require("./create-all-deltas");
 
 function checkIsValidConfiguarion(context) {
   console.log(context.platformToTargets.get("Platform"));
+
+  
   // if (context.platformToTargets.get("Platform").name !== "windows") {
   //   logger.error("DeltaBuilder is currently only supported for Windows target");
   //   return false;
