@@ -4,12 +4,12 @@
 Name "${PRODUCT_NAME}-Delta-Updater"
 OutFile "${INSTALLER_OUTPUT_PATH}"
 RequestExecutionLevel user
-ShowInstDetails nevershow
+ShowInstDetails show
 Unicode true
 
 Icon "${PRODUCT_ICON_PATH}"
 
-SilentInstall silent
+SilentInstall normal
 
 InstallDir "$LocalAppData\Programs\${PRODUCT_NAME}-delta-updater"
 

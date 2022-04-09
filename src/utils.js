@@ -6,6 +6,7 @@ const { spawnSync } = require("child_process");
 const fs = require("fs-extra");
 const crypto = require("crypto");
 const sevenZip = require("7zip-min");
+const path = require("path");
 
 const pipeline = promisify(stream.pipeline);
 
@@ -74,11 +75,7 @@ const computeSHA256 = (filePath) => {
 };
 
 function fileNameFromUrl(url) {
-  var matches = url.match(/\/([^\/?#]+)[^\/]*$/);
-  if (matches.length > 1) {
-    return matches[1];
-  }
-  return null;
+  return path.basename(url);
 }
 
 module.exports = {

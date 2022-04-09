@@ -23,7 +23,6 @@ function checkIsValidConfiguarion(context) {
 
 const DeltaBuilder = {
   build: async ({ context, options }) => {
-    console.log(context);
     const outDir = context.outDir;
     const artifactPaths = context.artifactPaths;
 
