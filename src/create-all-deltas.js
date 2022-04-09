@@ -84,6 +84,11 @@ const createAllDeltas = async ({
   }
 
   const latestReleaseDir = path.join(dataDir, latestReleaseFileName);
+
+  // extract the latest release
+
+  await extract7zip(latestReleaseFile, latestReleaseDir);
+
   const outputDir = path.join(outDir, latestReleaseFileName);
 
   await fs.ensureDir(latestReleaseDir);
