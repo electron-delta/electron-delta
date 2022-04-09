@@ -42,9 +42,9 @@ const createAllDeltas = async ({
     return null;
   }
 
-  const latestReleaseFile = artifactPaths
-    .filter((d) => d.endsWith(".exe"))
-    .filter((d) => d.includes(productName))[0];
+  const latestReleaseFile = artifactPaths.filter((d) => d.endsWith(".exe"))[0];
+
+  console.log("latestReleaseFile", latestReleaseFile);
 
   const latestReleaseFileName = removeExt(fileNameFromUrl(latestReleaseFile));
   const latestVersion = process.env.npm_package_version;
@@ -84,7 +84,7 @@ const createAllDeltas = async ({
   }
 
   const latestReleaseDir = path.join(dataDir, latestReleaseFileName);
-  const outputDir = path.join(deltaDir, latestReleaseFileName);
+  const outputDir = path.join(outDir, latestReleaseFileName);
 
   await fs.ensureDir(latestReleaseDir);
   await fs.ensureDir(outputDir);
