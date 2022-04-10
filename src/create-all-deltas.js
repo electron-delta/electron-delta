@@ -24,6 +24,7 @@ const createAllDeltas = async ({
   productName,
   processName,
 }) => {
+  
   fs.ensureDirSync(cacheDir);
 
   const dataDir = path.join(cacheDir, "./data");

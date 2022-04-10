@@ -1,4 +1,5 @@
 const createAllDeltas = require("./create-all-deltas");
+const path = require("path");
 
 function checkIsValidConfiguarion(context) {
   // if (context.platformToTargets.get("Platform").name !== "windows") {
@@ -27,7 +28,10 @@ const DeltaBuilder = {
     const artifactPaths = context.artifactPaths;
 
     const logger = options.logger || console;
-    const cacheDir = process.env.ELECTRON_DELTA_CACHE || options.cache;
+    const cacheDir =
+      process.env.ELECTRON_DELTA_CACHE ||
+      options.cache ||
+      path.join(require("os").homedir(), ".electron-delta");
 
     const getPreviousReleases = options.getPreviousReleases;
     const sign = options.sign;
