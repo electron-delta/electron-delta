@@ -42,6 +42,9 @@ const createAllDeltas = async ({
     return null;
   }
 
+  // last 10 releases only
+  allReleases = allReleases.slice(0, 10);
+
   const latestReleaseFile = artifactPaths.filter((d) => d.endsWith(".exe"))[0];
 
   console.log("latestReleaseFile", latestReleaseFile);
