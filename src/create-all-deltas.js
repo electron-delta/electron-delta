@@ -24,7 +24,6 @@ const createAllDeltas = async ({
   productName,
   processName,
 }) => {
-  
   fs.ensureDirSync(cacheDir);
 
   const dataDir = path.join(cacheDir, "./data");
@@ -120,7 +119,7 @@ const createAllDeltas = async ({
     if (oldAppName !== latestReleaseFileName) {
       const deltaFileName = `${oldAppName}-to-${latestReleaseFileName}.delta`;
       const deltaFilePath = path.join(deltaDir, deltaFileName);
-      const installerFileName = `${oldAppName}-to-${latestReleaseFileName}.exe`;
+      const installerFileName = `${oldAppName}-to-${latestReleaseFileName}-delta.exe`;
       const installerOutputPath = path.join(outputDir, installerFileName);
       console.log(`Creating delta installer for ${oldAppName}`);
       await deltaInstallerBuilder.build({
