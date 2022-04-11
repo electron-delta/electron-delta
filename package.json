@@ -10,8 +10,8 @@
     "type": "git",
     "url": "git+https://github.com/electron-delta/electron-delta.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Sandeep Acharya <i.am.sandeep.acharya@gmail.com>",
+  "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/electron-delta/electron-delta/issues"
   },
