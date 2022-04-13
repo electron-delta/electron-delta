@@ -10,6 +10,12 @@
     "type": "git",
     "url": "git+https://github.com/electron-delta/electron-delta.git"
   },
+  "keywords": [
+    "electron-delta-builder",
+    "electron-delta",
+    "delta-updates",
+    "auto-updater"
+  ],
   "author": "Sandeep Acharya <i.am.sandeep.acharya@gmail.com>",
   "license": "UNLICENSED",
   "bugs": {
