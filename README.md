@@ -1,4 +1,4 @@
-# Electron Delta
+# @electron-delta/builder
 
 True delta updates for electronjs apps. It reduces the bandwidth usage by 90%. Users download only the delta. It uses binary diffing (`HDiffPatch` library) to generate the delta.
 
@@ -72,4 +72,3 @@ exports.default = async function (context) {
   return deltaInstallerFiles;
 };
 ```
-
