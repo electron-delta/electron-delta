@@ -1,21 +1,16 @@
-const createAllDeltas = require("./create-all-deltas");
-const path = require("path");
+const path = require('path');
+const createAllDeltas = require('./create-all-deltas');
 
-function checkIsValidConfiguarion(context) {
-  // if (context.platformToTargets.get("Platform").name !== "windows") {
-  //   logger.error("DeltaBuilder is currently only supported for Windows target");
-  //   return false;
-  // }
-
+function checkIsValidConfiguarion(context, logger) {
   if (!context.configuration.nsis.oneClick) {
     logger.error(
-      "DeltaBuilder is currently only supported for one-click installers"
+      'DeltaBuilder is currently only supported for one-click installers',
     );
     return false;
   }
 
   if (context.configuration.nsis.perMachine) {
-    logger.error("perMachine must be false for delta builds");
+    logger.error('perMachine must be false for delta builds');
     return false;
   }
 
@@ -24,23 +19,22 @@ function checkIsValidConfiguarion(context) {
 
 const DeltaBuilder = {
   build: async ({ context, options }) => {
-    const outDir = context.outDir;
-    const artifactPaths = context.artifactPaths;
+    const { outDir } = context;
+    const { artifactPaths } = context;
 
     const logger = options.logger || console;
-    const cacheDir =
-      process.env.ELECTRON_DELTA_CACHE ||
-      options.cache ||
-      path.join(require("os").homedir(), ".electron-delta");
+    const cacheDir = process.env.ELECTRON_DELTA_CACHE
+      || options.cache
+      || path.join(require('os').homedir(), '.electron-delta');
 
-    const getPreviousReleases = options.getPreviousReleases;
-    const sign = options.sign;
+    const { getPreviousReleases } = options;
+    const { sign } = options;
 
-    const productIconPath = options.productIconPath;
-    const productName = options.productName;
+    const { productIconPath } = options;
+    const { productName } = options;
     const processName = options.processName || productName;
 
-    if (!checkIsValidConfiguarion(context)) {
+    if (!checkIsValidConfiguarion(context, logger)) {
       return;
     }
 
