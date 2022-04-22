@@ -55,8 +55,18 @@ const options = {
 
   getPreviousReleases: async () => {
     return [
-      // "https://download.url/electron-sample-app-setup-0.0.3.exe",
-      // "https://download.url/electron-sample-app-setup-0.0.2.exe",
+      {
+        version: '0.0.12',
+        url: 'https://github.com/electron-delta/electron-sample-app/releases/download/v0.0.12/electron-sample-app-0.0.12.exe'
+      },
+      {
+        version: '0.0.11',
+        url: 'https://github.com/electron-delta/electron-sample-app/releases/download/v0.0.11/electron-sample-app-0.0.11.exe'
+      },
+      {
+        version: '0.0.9',
+        url: 'https://github.com/electron-delta/electron-sample-app/releases/download/v0.0.9/electron-sample-app-0.0.9.exe'
+      }
     ];
   },
   sign: async (filePath) => {
