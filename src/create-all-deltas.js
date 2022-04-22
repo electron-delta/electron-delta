@@ -1,17 +1,23 @@
 /* eslint-disable no-console, no-restricted-syntax, no-await-in-loop */
-const path = require("path");
-const fs = require("fs-extra");
-const DeltaInstallerBuilder = require("./delta-installer-builder");
-const createDelta = require("./delta-installer-builder/create-delta");
+const path = require('path');
+const fs = require('fs-extra');
+const semverClean = require('semver/functions/clean');
+const DeltaInstallerBuilder = require('./delta-installer-builder');
+const createDelta = require('./delta-installer-builder/create-delta');
 const {
   downloadFileIfNotExists,
   extract7zip,
-  getDownloadURL,
   removeExt,
-  delay,
   computeSHA256,
   fileNameFromUrl,
-} = require("./utils");
+} = require('./utils');
+
+const preparePreviousReleases = (previousReleases) => previousReleases.map((release) => {
+  const { url } = release;
+  const version = semverClean(release.version);
+  const fileName = fileNameFromUrl(url);
+  return { url, version, fileName };
+});
 
 const createAllDeltas = async ({
   outDir,
@@ -26,8 +32,8 @@ const createAllDeltas = async ({
 }) => {
   fs.ensureDirSync(cacheDir);
 
-  const dataDir = path.join(cacheDir, "./data");
-  const deltaDir = path.join(cacheDir, "./deltas");
+  const dataDir = path.join(cacheDir, './data');
+  const deltaDir = path.join(cacheDir, './deltas');
 
   fs.ensureDirSync(dataDir);
   fs.ensureDirSync(deltaDir);
@@ -35,50 +41,48 @@ const createAllDeltas = async ({
   try {
     allReleases = await getPreviousReleases();
   } catch (e) {
-    logger.error("Unable to fetch previous releases", e);
+    logger.error('Unable to fetch previous releases', e);
   }
 
   if (!allReleases.length) {
+    logger.warn('No previous releases found');
     return null;
   }
 
   // last 10 releases only
   allReleases = allReleases.slice(0, 10);
 
-  const latestReleaseFile = artifactPaths.filter((d) => d.endsWith(".exe"))[0];
+  const latestReleaseFile = artifactPaths.filter((d) => d.endsWith('.exe'))[0];
 
-  console.log("latestReleaseFile", latestReleaseFile);
+  logger.debug('latestReleaseFile', latestReleaseFile);
 
   const latestReleaseFileName = removeExt(fileNameFromUrl(latestReleaseFile));
   const latestVersion = process.env.npm_package_version;
 
-  logger.log("Current release info ", {
+  logger.log('Current release info ', {
     latestReleaseFile,
     latestVersion,
     latestReleaseFileName,
   });
-
-  // const APP_GUID = "153f8ce0-b97a-575b-ba12-4ff8b1481894";
-  // const deltaBuilder = new DeltaBuilder({ APP_GUID });
 
   const deltaInstallerBuilder = new DeltaInstallerBuilder({
     PRODUCT_NAME: productName,
     PROCESS_NAME: processName,
   });
 
+  const previousReleases = preparePreviousReleases(allReleases);
+
   // download all the installers
-  for (const downloadURL of allReleases) {
-    const file = fileNameFromUrl(downloadURL);
-    const filePath = path.join(dataDir, file);
-    logger.log("Downloading file ", filePath, " from ", downloadURL);
-    await downloadFileIfNotExists(downloadURL, filePath);
+  for (const { url, fileName } of previousReleases) {
+    const filePath = path.join(dataDir, fileName);
+    logger.log('Downloading file ', filePath, ' from ', url);
+    await downloadFileIfNotExists(url, filePath);
   }
 
   // extract the installers
-  for (const downloadURL of allReleases) {
-    const file = fileNameFromUrl(downloadURL);
-    const extractedDir = path.join(dataDir, removeExt(file));
-    const filePath = path.join(dataDir, file);
+  for (const { fileName, version } of previousReleases) {
+    const extractedDir = path.join(dataDir, version);
+    const filePath = path.join(dataDir, fileName);
     if (!fs.existsSync(path.join(extractedDir, `${processName}.exe`))) {
       fs.ensureDirSync(extractedDir);
       fs.emptyDirSync(extractedDir);
@@ -86,64 +90,64 @@ const createAllDeltas = async ({
     }
   }
 
-  const latestReleaseDir = path.join(dataDir, latestReleaseFileName);
-
+  const latestReleaseDir = path.join(dataDir, latestVersion);
   // extract the latest release
 
   await extract7zip(latestReleaseFile, latestReleaseDir);
-
-  const outputDir = path.join(outDir, latestReleaseFileName);
+  const outputDir = path.join(outDir, `${latestVersion}-delta-installers`);
 
   await fs.ensureDir(latestReleaseDir);
   await fs.ensureDir(outputDir);
   await fs.emptyDir(outputDir);
 
   // compute the delta between any two versions
-  for (const downloadURL of allReleases) {
-    const file = fileNameFromUrl(downloadURL);
-    const oldAppName = removeExt(file);
-    if (oldAppName !== latestReleaseFileName) {
-      const deltaFileName = `${oldAppName}-to-${latestReleaseFileName}.delta`;
-      const deltaFilePath = path.join(deltaDir, deltaFileName);
-      console.log(`Creating delta for ${oldAppName}`);
-      createDelta(
-        path.join(dataDir, oldAppName),
-        latestReleaseDir,
-        deltaFilePath
-      );
-      console.log("Delta file created ", deltaFilePath);
-    }
+  for (const { version } of previousReleases) {
+    const deltaFileName = `${productName}-${version}-to-${latestVersion}.delta`;
+    const deltaFilePath = path.join(deltaDir, deltaFileName);
+    logger.log(`Creating delta for ${version}`);
+    createDelta(
+      path.join(dataDir, version),
+      latestReleaseDir,
+      deltaFilePath,
+    );
+    logger.log('Delta file created ', deltaFilePath);
   }
+
+  const deltaJSON = {
+    productName,
+    latestVersion,
+  };
 
   // create the installer and sign it
-  for (const downloadURL of allReleases) {
-    const file = fileNameFromUrl(downloadURL);
-    const oldAppName = removeExt(file);
-    if (oldAppName !== latestReleaseFileName) {
-      const deltaFileName = `${oldAppName}-to-${latestReleaseFileName}.delta`;
-      const deltaFilePath = path.join(deltaDir, deltaFileName);
-      const installerFileName = `${oldAppName}-to-${latestReleaseFileName}-delta.exe`;
-      const installerOutputPath = path.join(outputDir, installerFileName);
-      console.log(`Creating delta installer for ${oldAppName}`);
-      await deltaInstallerBuilder.build({
-        installerOutputPath,
-        deltaFilePath,
-        deltaFileName,
-        productIconPath,
-      });
-      sign(installerOutputPath);
-    }
+  for (const { version } of previousReleases) {
+    const deltaFileName = `${productName}-${version}-to-${latestVersion}.delta`;
+    const deltaFilePath = path.resolve(path.join(deltaDir, deltaFileName));
+    const installerFileName = `${productName}-${version}-to-${latestVersion}-delta.exe`;
+    const installerOutputPath = path.resolve(path.join(outputDir, installerFileName));
+    console.log(`Creating delta installer for ${version}`);
+    await deltaInstallerBuilder.build({
+      installerOutputPath,
+      deltaFilePath,
+      deltaFileName,
+      productIconPath,
+    });
+    sign(installerOutputPath);
+
+    logger.log('Delta installer created ', installerOutputPath);
+    deltaJSON[version] = { path: installerFileName };
   }
 
-  const installerFileNames = fs.readdirSync(outputDir);
-
-  for (const installerName of installerFileNames) {
-    const installerPath = path.join(outputDir, installerName);
-    console.log("Compute the sha256 of the installer ", installerPath);
-    const sha256 = computeSHA256(installerPath);
-    console.log("Computed sha256 ", sha256);
-    fs.writeFileSync(path.join(`${installerPath}.sha256`), sha256);
+  for (const { version } of previousReleases) {
+    const installerFileName = `${productName}-${version}-to-${latestVersion}-delta.exe`;
+    const installerOutputPath = path.join(outputDir, installerFileName);
+    console.log('Compute the sha256 of the installer ', installerOutputPath);
+    const sha256 = computeSHA256(installerOutputPath);
+    console.log('Computed sha256 ', sha256);
+    deltaJSON[version] = { ...deltaJSON[version], sha256 };
   }
+
+  const deltaJSONPath = path.join(outputDir, 'delta.json');
+  fs.writeFileSync(deltaJSONPath, JSON.stringify(deltaJSON, null, 2));
 
   return fs
     .readdirSync(outputDir)
