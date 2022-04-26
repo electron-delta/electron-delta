@@ -2,6 +2,8 @@
 
 True delta updates for electronjs apps. It reduces the bandwidth usage by 90%. Users download only the delta. It uses binary diffing (`HDiffPatch` library) to generate the delta.
 
+![Delta updates](https://electrondelta.com/assets/delta-downloading.png)
+
 ## Requirements
 
 1. The app must use `electron-builder` to build the app.
@@ -14,7 +16,7 @@ True delta updates for electronjs apps. It reduces the bandwidth usage by 90%. U
 #### Step 1:
 
 ```sh
-npm install @electron-delta/builder
+npm install @electron-delta/builder -D
 ```
 
 #### Step 2:
@@ -82,3 +84,11 @@ exports.default = async function (context) {
   return deltaInstallerFiles;
 };
 ```
+
+## `options`
+  - `productIconPath`: (required) Path to the icon file. The icon file must be a .ico file.
+  - `productName`: (required) Name of the product.
+  - `getPreviousReleases`: (required) Function to get the previous releases. It must return an array of objects. Each object must have `version` and `url` properties.
+  - `sign`: (required) Function to sign the delta executable.
+  - `cache`: (optional) Path to the cache directory.
+  - `processName`: (optional) Name of the process. If different from the product name.
