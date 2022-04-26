@@ -90,5 +90,5 @@ exports.default = async function (context) {
   - `productName`: (required) Name of the product.
   - `getPreviousReleases`: (required) Function to get the previous releases. It must return an array of objects. Each object must have `version` and `url` properties.
   - `sign`: (required) Function to sign the delta executable.
-  - `cache`: (optional) Path to the cache directory.
+  - `cache`: (optional) Path to the cache directory. If not specified, the default cache directory will be used. The default cache directory is `~/.electron-delta/`.
   - `processName`: (optional) Name of the process. If different from the product name.
