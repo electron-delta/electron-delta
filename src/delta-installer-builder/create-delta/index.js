@@ -1,15 +1,15 @@
 /* eslint-disable no-nested-ternary */
-const path = require("path");
-const { spawnSync } = require("child_process");
+const path = require('path');
+const { spawnSync } = require('child_process');
 
 const hdiffz = path.join(
   __dirname,
-  process.platform === "darwin"
-    ? "macOS"
-    : process.platform === "win32"
-    ? "windows"
-    : "linux",
-  process.platform === "win32" ? "hdiffz.exe" : "hdiffz"
+  process.platform === 'darwin'
+    ? 'macOS'
+    : process.platform === 'win32'
+      ? 'windows'
+      : 'linux',
+  process.platform === 'win32' ? 'hdiffz.exe' : 'hdiffz',
 );
 
 /**
@@ -21,13 +21,13 @@ const hdiffz = path.join(
 
 const createDelta = (oldDir, newDir, patchOut) => {
   try {
-    spawnSync(hdiffz, ["-f", "-c-lzma2", oldDir, newDir, patchOut], {
-      stdio: "inherit",
+    spawnSync(hdiffz, ['-f', '-c-lzma2', oldDir, newDir, patchOut], {
+      stdio: 'inherit',
     });
 
     return true;
   } catch (err) {
-    console.log("Compute hdiffz error ", err);
+    console.log('Compute hdiffz error ', err);
     return null;
   }
 };
