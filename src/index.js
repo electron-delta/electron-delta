@@ -1,5 +1,11 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable global-require */
 const path = require('path');
 const createAllDeltas = require('./create-all-deltas');
+const {
+  removeExt,
+  fileNameFromUrl,
+} = require('./utils');
 
 function checkIsValidConfiguarion(context, logger) {
   if (!context.configuration.nsis.oneClick) {
@@ -17,40 +23,92 @@ function checkIsValidConfiguarion(context, logger) {
   return true;
 }
 
+const getLatestReleaseInfo = ({ artifactPaths, platform = 'win', latestVersion }) => {
+  const latestReleaseFilePath = artifactPaths.filter((d) => d.endsWith(platform === 'win' ? '.exe' : '.zip'))[0];
+
+  const latestReleaseFileName = removeExt(fileNameFromUrl(latestReleaseFilePath));
+
+  return { latestReleaseFilePath, latestReleaseFileName, latestVersion };
+};
+
 const DeltaBuilder = {
   build: async ({ context, options }) => {
     const { outDir } = context;
     const { artifactPaths } = context;
 
     const logger = options.logger || console;
+    const { sign } = options;
+    const { productIconPath } = options;
+    const { productName } = options;
+    const processName = options.processName || productName;
     const cacheDir = process.env.ELECTRON_DELTA_CACHE
       || options.cache
       || path.join(require('os').homedir(), '.electron-delta');
 
-    const { getPreviousReleases } = options;
-    const { sign } = options;
-
-    const { productIconPath } = options;
-    const { productName } = options;
-    const processName = options.processName || productName;
-
     if (!checkIsValidConfiguarion(context, logger)) {
-      return;
+      return [];
     }
 
-    const deltaInstallerFiles = await createAllDeltas({
-      outDir,
-      artifactPaths,
-      logger,
-      cacheDir,
-      getPreviousReleases,
-      sign,
-      productIconPath,
-      productName,
-      processName,
-    });
+    const buildFiles = [];
 
-    return deltaInstallerFiles;
+    for await (const platform of context.platformToTargets.keys()) {
+      if (platform.buildConfigurationKey === 'win') {
+        const {
+          latestReleaseFilePath,
+          latestReleaseFileName,
+          latestVersion,
+        } = getLatestReleaseInfo({
+          artifactPaths,
+          platform: 'win',
+          latestVersion: process.env.npm_package_version,
+        });
+
+        const deltaInstallerFilesWin = await createAllDeltas({
+          platform: 'win',
+          outDir,
+          logger,
+          cacheDir,
+          getPreviousReleases: options.getWindowsPreviousReleases,
+          sign,
+          productIconPath,
+          productName,
+          processName,
+          latestReleaseFilePath,
+          latestReleaseFileName,
+          latestVersion,
+        });
+        buildFiles.push(...deltaInstallerFilesWin);
+      }
+
+      if (platform.buildConfigurationKey === 'mac') {
+        const {
+          latestReleaseFilePath,
+          latestReleaseFileName,
+          latestVersion,
+        } = getLatestReleaseInfo({
+          artifactPaths,
+          platform: 'mac',
+          latestVersion: process.env.npm_package_version,
+        });
+        const deltaInstallerFilesWin = await createAllDeltas({
+          platform: 'mac',
+          outDir,
+          logger,
+          cacheDir,
+          getPreviousReleases: options.getMacPreviousReleases,
+          sign,
+          productIconPath,
+          productName,
+          processName,
+          latestReleaseFilePath,
+          latestReleaseFileName,
+          latestVersion,
+        });
+        buildFiles.push(...deltaInstallerFilesWin);
+      }
+    }
+
+    return buildFiles;
   },
 };
 
