@@ -77,7 +77,9 @@ const DeltaBuilder = {
           latestReleaseFileName,
           latestVersion,
         });
-        buildFiles.push(...deltaInstallerFilesWin);
+        if (deltaInstallerFilesWin && deltaInstallerFilesWin.length) {
+          buildFiles.push(...deltaInstallerFilesWin);
+        }
       }
 
       if (platform.buildConfigurationKey === 'mac') {
@@ -90,7 +92,7 @@ const DeltaBuilder = {
           platform: 'mac',
           latestVersion: process.env.npm_package_version,
         });
-        const deltaInstallerFilesWin = await createAllDeltas({
+        const deltaInstallerFilesMac = await createAllDeltas({
           platform: 'mac',
           outDir,
           logger,
@@ -104,7 +106,9 @@ const DeltaBuilder = {
           latestReleaseFileName,
           latestVersion,
         });
-        buildFiles.push(...deltaInstallerFilesWin);
+        if (deltaInstallerFilesMac && deltaInstallerFilesMac.length) {
+          buildFiles.push(...deltaInstallerFilesMac);
+        }
       }
     }
 
