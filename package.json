@@ -24,7 +24,7 @@
   "homepage": "https://github.com/electron-delta/electron-delta#readme",
   "dependencies": {
     "7zip-min": "^1.4.2",
-    "env-paths": "^3.0.0",
+    "env-paths": "^2.2.1",
     "fs-extra": "^10.1.0",
     "got": "^11.8.3",
     "semver": "^7.3.7"
