@@ -1,4 +1,4 @@
-## I'm working on macos delta updates. It's going to come soon.
+## I'm working on macos delta updates. It's going to come soon. Help required!
 
 # @electron-delta/builder
 
