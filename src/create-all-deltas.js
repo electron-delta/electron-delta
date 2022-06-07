@@ -29,6 +29,7 @@ const createAllDeltas = async ({
   productIconPath,
   productName,
   processName,
+  latestVersion,
 }) => {
   fs.ensureDirSync(cacheDir);
 
@@ -57,7 +58,6 @@ const createAllDeltas = async ({
   logger.debug('latestReleaseFile', latestReleaseFile);
 
   const latestReleaseFileName = removeExt(fileNameFromUrl(latestReleaseFile));
-  const latestVersion = process.env.npm_package_version;
 
   logger.log('Current release info ', {
     latestReleaseFile,

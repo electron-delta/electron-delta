@@ -94,3 +94,4 @@ exports.default = async function (context) {
   - `sign`: (required) Function to sign the delta executable.
   - `cache`: (optional) Path to the cache directory. If not specified, the default cache directory will be used. The default cache directory is `~/.electron-delta/`.
   - `processName`: (optional) Name of the process. If different from the product name.
+  - `latestVersion`: (optional) Latest version of the product. If not specified, the latest version will be fetched `process.env.npm_package_version`.

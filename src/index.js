@@ -33,6 +33,7 @@ const DeltaBuilder = {
     const { productIconPath } = options;
     const { productName } = options;
     const processName = options.processName || productName;
+    const latestVersion = options.latestVersion || process.env.npm_package_version;
 
     if (!checkIsValidConfiguarion(context, logger)) {
       return;
@@ -48,6 +49,7 @@ const DeltaBuilder = {
       productIconPath,
       productName,
       processName,
+      latestVersion,
     });
 
     return deltaInstallerFiles;
