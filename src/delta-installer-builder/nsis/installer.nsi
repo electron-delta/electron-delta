@@ -1,6 +1,7 @@
 !include FileFunc.nsh
 !include LogicLib.nsh
 
+
 Name "${PRODUCT_NAME}-Delta-Updater"
 OutFile "${INSTALLER_OUTPUT_PATH}"
 RequestExecutionLevel user
@@ -13,7 +14,6 @@ SilentInstall normal
 InstallDir "$LocalAppData\Programs\${PRODUCT_NAME}-delta-updater\"
 
 Var /GLOBAL appPath
-Var /GLOBAL args
 Var /GLOBAL norestart
 
 # avoid exit code 2
@@ -24,15 +24,15 @@ Var /GLOBAL norestart
 
 Section "gen_package" SEC01
 
-    ${GetParameters} $args
-    ${GetOptions} $args "-appPath=" $appPath
-    ${GetParameters} $args
-    ${GetOptions} $args "-norestart=" $norestart
+    ${GetParameters} $0
+    ${GetOptions} '$0' "/appPath=" $appPath
+
+    ${GetParameters} $0
+    ${GetOptions} '$0' "/norestart" $norestart
 
     DetailPrint "message: appPath: $appPath"
     DetailPrint "message: norestart: $norestart"
-    DetailPrint "message: args: $args"
-
+    DetailPrint "message: args: $0"
 
     SetDetailsPrint both
 	  nsProcess::_KillProcess "${PROCESS_NAME}.exe" $R0
@@ -59,10 +59,10 @@ Section "gen_package" SEC01
 
 
     ${If} $norestart == "1"
-      DetailPrint "-norestart switch found"
+      DetailPrint "/norestart switch found"
     ${Else}
       ShellExecAsUser::ShellExecAsUser "" "$appPath\${PROCESS_NAME}.exe" "--updated"
     ${EndIf}
 
-    ; !insertmacro quitSuccess
+    !insertmacro quitSuccess
 SectionEnd
