@@ -4,14 +4,17 @@
 Name "${PRODUCT_NAME}-Delta-Updater"
 OutFile "${INSTALLER_OUTPUT_PATH}"
 RequestExecutionLevel user
-ShowInstDetails hide
+ShowInstDetails show
 Unicode true
 
 Icon "${PRODUCT_ICON_PATH}"
+SilentInstall normal
 
-SilentInstall silent
+InstallDir "$LocalAppData\Programs\${PRODUCT_NAME}-delta-updater\"
 
-InstallDir "$LocalAppData\Programs\${PRODUCT_NAME}-delta-updater"
+Var /GLOBAL appPath
+Var /GLOBAL args
+Var /GLOBAL norestart
 
 # avoid exit code 2
 !macro quitSuccess
@@ -21,8 +24,17 @@ InstallDir "$LocalAppData\Programs\${PRODUCT_NAME}-delta-updater"
 
 Section "gen_package" SEC01
 
-    SetDetailsPrint none
+    ${GetParameters} $args
+    ${GetOptions} $args "-appPath=" $appPath
+    ${GetParameters} $args
+    ${GetOptions} $args "-norestart=" $norestart
 
+    DetailPrint "message: appPath: $appPath"
+    DetailPrint "message: norestart: $norestart"
+    DetailPrint "message: args: $args"
+
+
+    SetDetailsPrint both
 	  nsProcess::_KillProcess "${PROCESS_NAME}.exe" $R0
     Pop $R0
     nsProcess::_Unload
@@ -34,22 +46,23 @@ Section "gen_package" SEC01
     File "hpatchz.exe"
     File "${DELTA_FILE_PATH}"
 
-    nsExec::ExecToLog '"$INSTDIR\hpatchz.exe" -C-all "$LocalAppData\Programs\${PRODUCT_NAME}" "$INSTDIR\${DELTA_FILE_NAME}" "$INSTDIR\${PRODUCT_NAME}" -f'
+    nsExec::ExecToLog '"$INSTDIR\hpatchz.exe" -C-all "$appPath" "$INSTDIR\${DELTA_FILE_NAME}" "$INSTDIR\${PRODUCT_NAME}" -f'
+    DetailPrint $0
     Pop $0
 
-    CopyFiles /SILENT "$INSTDIR\${PRODUCT_NAME}" "$LocalAppData\Programs" 264080
+    CopyFiles /SILENT "$INSTDIR\${PRODUCT_NAME}" "$appPath" 264080
 
     ; WriteRegStr SHELL_CONTEXT "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${APP_GUID}" DisplayName "${PRODUCT_NAME}"
     ; WriteRegDWORD SHELL_CONTEXT "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${APP_GUID}" "EstimatedSize" "${NEW_APP_SIZE}"
     ; WriteRegStr SHELL_CONTEXT "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${APP_GUID}" "DisplayVersion" "${NEW_APP_VERSION}"
 
-    ${GetParameters} $R1
-    ${GetOptions} $R1 "-norestart" $R2
-    ${IfNot} ${Errors}
+
+
+    ${If} $norestart == "1"
       DetailPrint "-norestart switch found"
     ${Else}
-      ShellExecAsUser::ShellExecAsUser "" "$LocalAppData\Programs\${PRODUCT_NAME}\${PROCESS_NAME}.exe" "--updated"
+      ShellExecAsUser::ShellExecAsUser "" "$appPath\${PROCESS_NAME}.exe" "--updated"
     ${EndIf}
 
-    !insertmacro quitSuccess
+    ; !insertmacro quitSuccess
 SectionEnd
