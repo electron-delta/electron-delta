@@ -7,47 +7,31 @@ const {
   fileNameFromUrl,
 } = require('./utils');
 
-function checkIsValidConfiguarion(context, logger) {
-  if (!context.configuration.nsis.oneClick) {
-    logger.error(
-      'DeltaBuilder is currently only supported for one-click installers',
-    );
-    return false;
-  }
-
-  if (context.configuration.nsis.perMachine) {
-    logger.error('perMachine must be false for delta builds');
-    return false;
-  }
-
-  return true;
-}
-
-const getLatestReleaseInfo = ({ artifactPaths, platform = 'win', latestVersion }) => {
+const getLatestReleaseInfo = ({ artifactPaths, platform = 'win' }) => {
   const latestReleaseFilePath = artifactPaths.filter((d) => d.endsWith(platform === 'win' ? '.exe' : '.zip'))[0];
 
   const latestReleaseFileName = removeExt(fileNameFromUrl(latestReleaseFilePath));
 
-  return { latestReleaseFilePath, latestReleaseFileName, latestVersion };
+  return { latestReleaseFilePath, latestReleaseFileName };
 };
 
 const DeltaBuilder = {
   build: async ({ context, options }) => {
+    console.debug({ context }, { options });
+
     const { outDir } = context;
     const { artifactPaths } = context;
-
     const logger = options.logger || console;
     const { sign } = options;
     const { productIconPath } = options;
     const { productName } = options;
     const processName = options.processName || productName;
+
     const cacheDir = process.env.ELECTRON_DELTA_CACHE
       || options.cache
       || path.join(require('os').homedir(), '.electron-delta');
 
-    if (!checkIsValidConfiguarion(context, logger)) {
-      return [];
-    }
+    const latestVersion = options.latestVersion || process.env.npm_package_version;
 
     const buildFiles = [];
 
@@ -56,11 +40,9 @@ const DeltaBuilder = {
         const {
           latestReleaseFilePath,
           latestReleaseFileName,
-          latestVersion,
         } = getLatestReleaseInfo({
           artifactPaths,
           platform: 'win',
-          latestVersion: process.env.npm_package_version,
         });
 
         const deltaInstallerFilesWin = await createAllDeltas({
@@ -86,11 +68,9 @@ const DeltaBuilder = {
         const {
           latestReleaseFilePath,
           latestReleaseFileName,
-          latestVersion,
         } = getLatestReleaseInfo({
           artifactPaths,
           platform: 'mac',
-          latestVersion: process.env.npm_package_version,
         });
         const deltaInstallerFilesMac = await createAllDeltas({
           platform: 'mac',
@@ -111,6 +91,8 @@ const DeltaBuilder = {
         }
       }
     }
+
+    console.debug({ buildFiles });
 
     return buildFiles;
   },

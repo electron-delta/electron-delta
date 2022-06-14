@@ -1,27 +1,27 @@
-const path = require("path");
+const path = require('path');
 
-const DeltaInstallerBuilder = require("../src/delta-installer-builder");
+const DeltaInstallerBuilder = require('../src/delta-installer-builder');
 
-const { extract7zip } = require("../src/utils");
+const { extract7zip } = require('../src/utils');
 
-const installerOutputPath = path.join(__dirname, "linear-updater.exe");
+const installerOutputPath = path.join(__dirname, './delta-installer.exe');
 
-const PRODUCT_NAME = "electron-quick-start";
-const PROCESS_NAME = "electron-quick-start";
+const PRODUCT_NAME = 'electron-sample-app';
+const PROCESS_NAME = 'electron-sample-app';
 
-const createDelta = require("../src/delta-installer-builder/create-delta");
+const createDelta = require('../src/delta-installer-builder/create-delta');
 
 const latestEXEPath = path.resolve(
-  "D:\\Work\\electron-delta\\electron-quick-start\\dist\\electron-quick-start-0.0.3.exe"
+  'D:\\Work\\electron-delta\\electron-sample-app\\dist\\electron-sample-app-1.0.0.exe',
 );
 
 const oldEXEPath = path.resolve(
-  "D:\\Work\\electron-delta\\electron-quick-start\\dist\\electron-quick-start-0.0.2.exe"
+  'D:\\Work\\electron-delta\\electron-sample-app\\dist\\electron-sample-app-1.0.1.exe',
 );
 
 (async () => {
-  const oldDir = path.join(__dirname, "old");
-  const latestDir = path.join(__dirname, "latest");
+  const oldDir = path.join(__dirname, 'old');
+  const latestDir = path.join(__dirname, 'latest');
   const deltaFilePath = path.join(__dirname, `${PRODUCT_NAME}.delta`);
 
   await extract7zip(latestEXEPath, latestDir);
@@ -39,7 +39,7 @@ const oldEXEPath = path.resolve(
       installerOutputPath,
       deltaFilePath,
       deltaFileName: `${PRODUCT_NAME}.delta`,
-      productIconPath: path.resolve(__dirname, "appIcon.ico"),
+      productIconPath: path.resolve(__dirname, 'appIcon.ico'),
     });
   } catch (e) {
     console.log(e);

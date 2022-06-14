@@ -1,3 +1,5 @@
+## I'm working on macos delta updates. It's going to come soon. Help required!
+
 # @electron-delta/builder
 
 True delta updates for electronjs apps. It reduces the bandwidth usage by 90%. Users download only the delta. It uses binary diffing (`HDiffPatch` library) to generate the delta.
@@ -92,5 +94,4 @@ exports.default = async function (context) {
   - `sign`: (required) Function to sign the delta executable.
   - `cache`: (optional) Path to the cache directory. If not specified, the default cache directory will be used. The default cache directory is `~/.electron-delta/`.
   - `processName`: (optional) Name of the process. If different from the product name.
-
-
+  - `latestVersion`: (optional) Latest version of the product. If not specified, the latest version will be fetched `process.env.npm_package_version`.
