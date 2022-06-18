@@ -23,6 +23,7 @@ const createAllDeltas = async ({
   outDir,
   logger,
   cacheDir,
+  target,
   getPreviousReleases,
   sign,
   productIconPath,
@@ -40,7 +41,10 @@ const createAllDeltas = async ({
 
   let allReleases = [];
   try {
-    allReleases = await getPreviousReleases();
+    allReleases = await getPreviousReleases({
+      platform,
+      target,
+    });
   } catch (e) {
     logger.error('Unable to fetch previous releases', e);
   }

@@ -7,8 +7,27 @@ const {
   fileNameFromUrl,
 } = require('./utils');
 
-const getLatestReleaseInfo = ({ artifactPaths, platform = 'win' }) => {
-  const latestReleaseFilePath = artifactPaths.filter((d) => d.endsWith(platform === 'win' ? '.exe' : '.zip'))[0];
+const macOSBinaries = [
+  path.join(__dirname, './mac-updater-binaries/hpatchz'),
+  path.join(__dirname, './mac-updater-binaries/mac-updater'),
+];
+
+const windowsDone = false;
+const macDone = false;
+
+const getLatestReleaseInfo = ({ artifactPaths, platform, target }) => {
+  const latestReleaseFilePath = artifactPaths.filter((d) => {
+    if (platform === 'win' && target === 'nsis') {
+      return d.endsWith('.exe');
+    }
+    if (platform === 'win' && target === 'nsis-web') {
+      return d.endsWith('.7z');
+    }
+    if (platform === 'mac') {
+      return d.endsWith('.zip');
+    }
+    return false;
+  })[0];
 
   const latestReleaseFileName = removeExt(fileNameFromUrl(latestReleaseFilePath));
 
@@ -17,7 +36,10 @@ const getLatestReleaseInfo = ({ artifactPaths, platform = 'win' }) => {
 
 const DeltaBuilder = {
   build: async ({ context, options }) => {
-    console.debug({ context }, { options });
+    console.log('Building deltas...');
+    console.debug('context', context);
+    console.debug('options', options);
+    console.log('platformToTargets', context.platformToTargets);
 
     const { outDir } = context;
     const { artifactPaths } = context;
@@ -32,25 +54,33 @@ const DeltaBuilder = {
       || path.join(require('os').homedir(), '.electron-delta');
 
     const latestVersion = options.latestVersion || process.env.npm_package_version;
-
+    const { getPreviousReleases } = options;
     const buildFiles = [];
 
     for await (const platform of context.platformToTargets.keys()) {
-      if (platform.buildConfigurationKey === 'win') {
+      const platformName = platform.buildConfigurationKey;
+      console.log('Building deltas for platform: ', platformName);
+
+      if (platformName === 'win') {
+        // create delta for windows
+        const targets = context.platformToTargets.get(platform);
+        const target = targets.entries().next().value[0];
+        console.log('Only first target name is taken: ', target);
         const {
           latestReleaseFilePath,
           latestReleaseFileName,
         } = getLatestReleaseInfo({
           artifactPaths,
-          platform: 'win',
+          platform: platformName,
+          target,
         });
-
-        const deltaInstallerFilesWin = await createAllDeltas({
-          platform: 'win',
+        const deltaInstallerFilesWindows = await createAllDeltas({
+          platform: platformName,
           outDir,
           logger,
           cacheDir,
-          getPreviousReleases: options.getWindowsPreviousReleases,
+          target,
+          getPreviousReleases,
           sign,
           productIconPath,
           productName,
@@ -59,25 +89,30 @@ const DeltaBuilder = {
           latestReleaseFileName,
           latestVersion,
         });
-        if (deltaInstallerFilesWin && deltaInstallerFilesWin.length) {
-          buildFiles.push(...deltaInstallerFilesWin);
+        if (deltaInstallerFilesWindows && deltaInstallerFilesWindows.length) {
+          buildFiles.push(...deltaInstallerFilesWindows);
         }
       }
 
-      if (platform.buildConfigurationKey === 'mac') {
+      if (platformName === 'mac') {
+        // create delta for mac
+        // for mac zip target is mandatory
+        // hence no need to mention the target
         const {
           latestReleaseFilePath,
           latestReleaseFileName,
         } = getLatestReleaseInfo({
           artifactPaths,
-          platform: 'mac',
+          platform: platformName,
+          target: 'zip',
         });
         const deltaInstallerFilesMac = await createAllDeltas({
-          platform: 'mac',
+          platform: platformName,
           outDir,
           logger,
           cacheDir,
-          getPreviousReleases: options.getMacPreviousReleases,
+          target: 'zip',
+          getPreviousReleases,
           sign,
           productIconPath,
           productName,
@@ -88,12 +123,12 @@ const DeltaBuilder = {
         });
         if (deltaInstallerFilesMac && deltaInstallerFilesMac.length) {
           buildFiles.push(...deltaInstallerFilesMac);
+          console.log('Adding Macos updater helper binaries ', deltaInstallerFilesMac);
+          buildFiles.push(...macOSBinaries);
         }
       }
     }
-
-    console.debug({ buildFiles });
-
+    console.debug('Created delta files', buildFiles);
     return buildFiles;
   },
 };
