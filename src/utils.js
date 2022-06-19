@@ -5,8 +5,12 @@ const got = require('got');
 const { spawnSync } = require('child_process');
 const fs = require('fs-extra');
 const crypto = require('crypto');
-const sevenZip = require('7zip-min');
+
+const sevenBin = require('7zip-bin');
+const { extractFull } = require('node-7z');
 const path = require('path');
+
+const pathTo7zip = sevenBin.path7za;
 
 const pipeline = promisify(stream.pipeline);
 
@@ -45,14 +49,19 @@ const downloadFileIfNotExists = async (url, filePath) => {
 const extract7zip = (zipPath, extractedDir) => new Promise((resolve, reject) => {
   console.log(`Extracting ${zipPath}`);
   console.log('Start extracting to ', extractedDir);
-  sevenZip.unpack(zipPath, extractedDir, (err) => {
-    if (err) {
-      console.log(err);
-      reject(new Error(err));
-    } else {
-      console.log('Extraction complete');
-      resolve();
-    }
+
+  const zipStream = extractFull(zipPath, extractedDir, {
+    recursive: true,
+  });
+
+  zipStream.on('error', (err) => {
+    console.log('Error extracting: ', err);
+    reject(err);
+  });
+
+  zipStream.on('end', () => {
+    console.log('Extracting completed\n');
+    resolve(extractedDir);
   });
 });
 
