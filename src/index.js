@@ -123,9 +123,9 @@ const DeltaBuilder = {
         });
         if (deltaInstallerFilesMac && deltaInstallerFilesMac.length) {
           buildFiles.push(...deltaInstallerFilesMac);
-          console.log('Adding Macos updater helper binaries ', deltaInstallerFilesMac);
-          buildFiles.push(...macOSBinaries);
         }
+        console.log('Adding Macos updater helper binaries ', deltaInstallerFilesMac);
+        buildFiles.push(...macOSBinaries);
       }
     }
     console.debug('Created delta files', buildFiles);
