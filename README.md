@@ -9,9 +9,8 @@ True delta updates for electronjs apps. It reduces the bandwidth usage by 90%. U
 ## Requirements
 
 1. The app must use `electron-builder` to build the app.
-2. Currently only `Windows` os is supported.
-3. Target must be `nsis`
-4. `oneClick` = `true` and `perMachine` = `false`
+2. Currently only `Windows` os is supported. MacOS support is arriving soon.
+3. Target must be `nsis` or `nsis-web`
 
 ## Installation
 
