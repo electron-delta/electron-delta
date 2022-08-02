@@ -52,6 +52,7 @@ const extract7zip = (zipPath, extractedDir) => new Promise((resolve, reject) => 
 
   const zipStream = extractFull(zipPath, extractedDir, {
     recursive: true,
+    $bin: pathTo7zip,
   });
 
   zipStream.on('error', (err) => {

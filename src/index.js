@@ -17,7 +17,7 @@ const macDone = false;
 
 const getLatestReleaseInfo = ({ artifactPaths, platform, target }) => {
   const latestReleaseFilePath = artifactPaths.filter((d) => {
-    if (platform === 'win' && target === 'nsis') {
+    if (platform === 'win' && target === 'nsis' && !d.includes('nsis-web')) {
       return d.endsWith('.exe');
     }
     if (platform === 'win' && target === 'nsis-web') {
