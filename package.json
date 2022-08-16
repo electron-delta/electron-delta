@@ -1,6 +1,6 @@
 {
   "name": "@electron-delta/builder",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "True delta updates for electronjs.",
   "main": "src/index.js",
   "scripts": {
